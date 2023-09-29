@@ -16,7 +16,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/myapp:$COMMIT_SHA']
     id: 'push-image-to-container-registry'
-    waitFor: ['build-image-myapp']
+    waitFor: ['build-image']
 
 # # Deploy to Cloud Run
 #   - name: google/cloud-sdk
