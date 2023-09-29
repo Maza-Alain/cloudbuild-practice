@@ -27,7 +27,7 @@ def bubble_sort():
 if __name__ == '__main__':
     app.run(debug=True)
 
-# pip freeze > requirements.txt
+
 
 # curl -X POST -H "Content-Type: application/json" -d '{
 #   "lista": [3, 4, 1, 22],
@@ -39,3 +39,4 @@ if __name__ == '__main__':
 
 # docker build --tag python-docker .
 # docker run python-docker:latest
+
