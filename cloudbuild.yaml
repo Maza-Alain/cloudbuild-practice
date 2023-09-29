@@ -30,6 +30,8 @@ steps:
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
+    waitFor: ['push-image-to-container-registry']
+    id: 'deploy-to-cloud-run'
 
 images:
 - 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:latest'
