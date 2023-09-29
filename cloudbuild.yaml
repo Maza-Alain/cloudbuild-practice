@@ -9,14 +9,17 @@ steps:
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     args: ['build', '-t', 'gcr.io/$PROJECT_ID/cloudbuild-practice-image:latest',
-        '-t', 'gcr.io/$PROJECT_ID/cloudbuild-practice-image:$COMMIT_SHA',
-        '-t', 'gcr.io/$PROJECT_ID/cloudbuild-practice-image:$BUILD_ID', '.']
+        '-t', 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA',
+        '-t', 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$BUILD_ID', '.']
     id: 'build-image'
 # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/myapp:$COMMIT_SHA']
+    args: ['push', 'us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA']
     id: 'push-image-to-container-registry'
     waitFor: ['build-image']
+substitutions:
+  PROJECT_ID: 'top-creek-395501'
+  _ARTIFACT_REGISTRY_REPO: 'cloudbuild-practice-artifacts'
 
 # # Deploy to Cloud Run
 #   - name: google/cloud-sdk
