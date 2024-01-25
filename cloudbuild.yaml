@@ -15,7 +15,7 @@ steps:
 # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA']
-    id: 'push-image-to-container-registry'
+    id: 'push-image-to-artifact-registry'
     waitFor: ['build-image']
     #cloud run
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -24,13 +24,14 @@ steps:
       - 'deploy'
       - 'cloudbuild-practice-service'
       - '--image'
-      - 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image@$COMMIT_SHA'
       - '--region'
+      - '--port=8080'
       - 'us-central1'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
-    waitFor: ['push-image-to-container-registry']
+    waitFor: ['push-image-to-artifact-registry']
     id: 'deploy-to-cloud-run'
 
 images:
