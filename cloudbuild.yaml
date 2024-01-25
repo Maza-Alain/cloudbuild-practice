@@ -24,13 +24,14 @@ steps:
       - 'deploy'
       - 'cloudbuild-practice-service'
       - '--image'
-      - 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image@$COMMIT_SHA'
+      - 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA'
       - '--region'
       - 'us-central1'
       - '--port=8080'
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
+      - '--project=guestbook-1997'
     waitFor: ['push-image-to-artifact-registry']
     id: 'deploy-to-cloud-run'
 
