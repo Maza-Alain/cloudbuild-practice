@@ -43,7 +43,6 @@ images:
 substitutions:
   _PROJECT_ID: 'guestbook-1997'
   _ARTIFACT_REGISTRY_REPO: 'cloudbuild-practice-artifacts'
-#tt
 # # Deploy to Cloud Run
 #   - name: google/cloud-sdk
 #     args: ['gcloud', 'run', 'deploy', 'helloworld-${SHORT_SHA}',
