@@ -1,10 +1,10 @@
 steps:
-  # Install dependencies
-  - name: python
-    entrypoint: pip
-    args: ["install", "-r", "requirements.txt", "--user"]
-    id: 'install-dependencies'
-    waitFor: ['-']
+  # # Install dependencies
+  # - name: python
+  #   entrypoint: pip
+  #   args: ["install", "-r", "requirements.txt", "--user"]
+  #   id: 'install-dependencies'
+  #   waitFor: ['-']
 
   # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
