@@ -11,15 +11,15 @@ def bubble_sort():
     algoritmo = data['algoritmo']
     # print('ojo', lista, algoritmo)
     if lista and algoritmo:
-        publisher = pubsub_v1.PublisherClient()
-        project_id = "top-creek-395501"
-        topic_id = "new-list"
-        topic_path = publisher.topic_path(project_id, topic_id)
-        data_published = json.dumps(data ).encode("utf-8")
-        print(topic_path)
-        future = publisher.publish(topic_path, data_published)
-        print(f"Published messages to {topic_path}.")
-        print('future', future.result())
+        # publisher = pubsub_v1.PublisherClient()
+        # project_id = "top-creek-395501"
+        # topic_id = "new-list"
+        # topic_path = publisher.topic_path(project_id, topic_id)
+        # data_published = json.dumps(data ).encode("utf-8")
+        # print(topic_path)
+        # future = publisher.publish(topic_path, data_published)
+        # print(f"Published messages to {topic_path}.")
+        # print('future', future.result())
         return jsonify({"mensaje": "Datos recibidos correctamente."}), 200
     else:
         return jsonify({"mensaje": "Datos recibidos incorrectos."}), 400
