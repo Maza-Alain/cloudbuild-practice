@@ -39,7 +39,7 @@ images:
 - 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$BUILD_ID'
 
 substitutions:
-  _PROJECT_ID: 'top-creek-395501'
+  _PROJECT_ID: 'guestbook-1997'
   _ARTIFACT_REGISTRY_REPO: 'cloudbuild-practice-artifacts'
 
 # # Deploy to Cloud Run
