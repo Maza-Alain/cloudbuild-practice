@@ -80,6 +80,7 @@ def bubble_sort():
     lista = data['lista']
     if lista:
         print(f'Lista a ordenar {lista}')
+        print(os.getenv("DATABASE_HOST"))
         tiempo_inicio = time.time()
         sortedList = bubble_algoritm(lista)
         tiempo_fin = time.time()

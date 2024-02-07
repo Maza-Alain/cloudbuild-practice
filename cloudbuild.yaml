@@ -16,6 +16,18 @@ steps:
 #     args: ['push', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/sample-sql-proxy:$COMMIT_SHA']
 #     id: 'push-proxy-image-to-artifact-registry'
 #     waitFor: ['build-proxy-image']
+#proxy bin (checar si sirve la substitution)
+  - id: "docker-layer"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: /bin/bash
+    args:
+      - '-c'
+      - |
+        echo "FROM $_IMAGE_NAME
+        COPY --from=gcr.io/cloud-sql-connectors/cloud-sql-proxy /cloud-sql-proxy /cloudsql/cloud-sql-proxy" > Dockerfile-proxy;
+
+        docker build -f Dockerfile-proxy -t ${_IMAGE_NAME}-proxy .
+    # waitFor: ['push-image-to-artifact-registry']
 # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     env:
@@ -30,24 +42,24 @@ steps:
         '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA',
         '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$BUILD_ID', '.']
     id: 'build-image'
-    # waitFor: ['docker-layer']
+    waitFor: ['docker-layer']
 # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA']
     id: 'push-image-to-artifact-registry'
     waitFor: ['build-image']
-#proxy bin (checar si sirve la substitution)
-  - id: "docker-layer"
-    name: "gcr.io/cloud-builders/docker"
-    entrypoint: /bin/bash
-    args:
-      - '-c'
-      - |
-        echo "FROM $_IMAGE_NAME
-        COPY --from=gcr.io/cloud-sql-connectors/cloud-sql-proxy /cloud-sql-proxy /cloudsql/cloud-sql-proxy" > Dockerfile-proxy;
+# #proxy bin (checar si sirve la substitution)
+#   - id: "docker-layer"
+#     name: "gcr.io/cloud-builders/docker"
+#     entrypoint: /bin/bash
+#     args:
+#       - '-c'
+#       - |
+#         echo "FROM $_IMAGE_NAME
+#         COPY --from=gcr.io/cloud-sql-connectors/cloud-sql-proxy /cloud-sql-proxy /cloudsql/cloud-sql-proxy" > Dockerfile-proxy;
 
-        docker build -f Dockerfile-proxy -t ${_IMAGE_NAME}-proxy .
-    waitFor: ['push-image-to-artifact-registry']
+#         docker build -f Dockerfile-proxy -t ${_IMAGE_NAME}-proxy .
+#     waitFor: ['push-image-to-artifact-registry']
 # For TCP connections
   - id: "migrate-tcp"
     name: "${_IMAGE_NAME}-proxy"
