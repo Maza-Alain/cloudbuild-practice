@@ -98,6 +98,7 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--project=algoritmos-1997'
+      - '--add-cloudsql-instances=${_INSTANCE_CONNECTION_NAME}'
     waitFor: ['build-image']
     id: 'deploy-to-cloud-run'
 
