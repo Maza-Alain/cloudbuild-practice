@@ -31,7 +31,7 @@ steps:
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
-      - '--project=guestbook-1997'
+      - '--project=algoritmos-1997'
     waitFor: ['push-image-to-artifact-registry']
     id: 'deploy-to-cloud-run'
 
