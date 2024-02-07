@@ -18,6 +18,14 @@ steps:
 #     waitFor: ['build-proxy-image']
 # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
+    env:
+      - "DATABASE_NAME=${_DATABASE_NAME}"
+      - "DATABASE_USER=${_DATABASE_USER}"
+      - "DATABASE_HOST=127.0.0.1"
+      - "DATABASE_PORT=${_DATABASE_PORT}"
+      - "DATABASE_TYPE=${_DATABASE_TYPE}"
+    secretEnv:
+      - DATABASE_PASS
     args: ['build', '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:latest',
         '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA',
         '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$BUILD_ID', '.']

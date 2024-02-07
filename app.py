@@ -7,11 +7,11 @@ import pymysql
 import os
 
 def obtener_conexion():
-    db_host = '127.0.0.1'
-    db_user = os.environ["DATABASE_USER"]
-    db_pass = os.environ["DATABASE_PASS"]
-    db_name = os.environ["DATABASE_NAME"]
-    db_port = os.environ["DATABASE_PORT"]
+    db_host = os.getenv("DATABASE_HOST")
+    db_user = os.getenv('DATABASE_USER')
+    db_pass = os.getenv("DATABASE_PASS")
+    db_name = os.getenv('DATABASE_NAME')
+    db_port = os.getenv("DATABASE_PORT")
     # db_host = os.environ["DATABASE_HOST"]
     # db_user = os.environ["DATABASE_USER"]
     # db_pass = os.environ["DATABASE_PASS"]
