@@ -17,6 +17,10 @@ steps:
 #     id: 'push-proxy-image-to-artifact-registry'
 #     waitFor: ['build-proxy-image']
 #proxy bin (checar si sirve la substitution)
+
+
+
+
   - id: "docker-layer"
     name: "gcr.io/cloud-builders/docker"
     entrypoint: /bin/bash

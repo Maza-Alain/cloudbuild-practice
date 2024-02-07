@@ -79,7 +79,7 @@ def bubble_sort():
     data = request.get_json()
     lista = data['lista']
     if lista:
-        print(f'Lista a ordenar {lista}')
+        print(f'Lista a ordenar {lista} {os.getenv("DATABASE_HOST")}')
         print(os.getenv("DATABASE_HOST"))
         tiempo_inicio = time.time()
         sortedList = bubble_algoritm(lista)
