@@ -20,7 +20,7 @@ def obtener_conexion():
     return pymysql.connect(host=db_host,
                                 user=db_user,
                                 password=db_pass,
-                                port= db_port ,
+                                port= int(db_port) ,
                                 db=db_name)
     # return pymysql.connect(host='127.0.0.1',
     #                             user='root',
