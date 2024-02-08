@@ -84,7 +84,8 @@ steps:
   #       python migrate.py
   #   waitFor: ['push-image-to-artifact-registry']
 #cloud run
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
     args:
       - 'run'
       - 'deploy'
@@ -102,7 +103,7 @@ steps:
       - '--set-env-vars'
       - 'DATABASE_TYPE=${_DATABASE_TYPE},DATABASE_PORT=${_DATABASE_PORT},DATABASE_HOST=127.0.0.1,DATABASE_NAME=${_DATABASE_NAME},DATABASE_USER=${_DATABASE_USER}'
       - '--set-secrets'
-      - 'DATABASE_PASS:latest=projects/$PROJECT_ID/secrets/${_DATABASE_PASSWORD_KEY}/versions/latest'
+      - 'DATABASE_PASS=projects/$PROJECT_ID/secrets/${_DATABASE_PASSWORD_KEY}/versions/latest'
     waitFor: ['build-image']
     id: 'deploy-to-cloud-run'
 
