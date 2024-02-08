@@ -40,12 +40,11 @@ steps:
     #   - "DATABASE_HOST=127.0.0.1"
     #   - "DATABASE_PORT=${_DATABASE_PORT}"
     #   - "DATABASE_TYPE=${_DATABASE_TYPE}"
-    secretEnv:
-      - DATABASE_PASS
+    # secretEnv:
+    #   - DATABASE_PASS
     args: ['build', '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:latest',
         '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA',
-        '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$BUILD_ID',
-        '--update-env-vars', 'DATABASE_PASS=${DATABASE_PASS}:latest,DATABASE_TYPE=${_DATABASE_TYPE},DATABASE_PORT=${_DATABASE_PORT},DATABASE_HOST=127.0.0.1,DATABASE_NAME=${_DATABASE_NAME},DATABASE_USER=${_DATABASE_USER}','.']
+        '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$BUILD_ID','.']
     id: 'build-image'
     # waitFor: ['docker-layer']
 # Docker push to Google Artifact Registry
@@ -100,6 +99,8 @@ steps:
       - '--allow-unauthenticated'
       - '--project=algoritmos-1997'
       - '--add-cloudsql-instances=${_INSTANCE_CONNECTION_NAME}'
+      - '--update-env-vars'
+      - 'DATABASE_PASS=${DATABASE_PASS},DATABASE_TYPE=${_DATABASE_TYPE},DATABASE_PORT=${_DATABASE_PORT},DATABASE_HOST=127.0.0.1,DATABASE_NAME=${_DATABASE_NAME},DATABASE_USER=${_DATABASE_USER}'
     waitFor: ['build-image']
     id: 'deploy-to-cloud-run'
 
