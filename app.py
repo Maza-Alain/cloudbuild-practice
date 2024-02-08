@@ -6,7 +6,6 @@ app = Flask(__name__)
 import pymysql
 import os
 from google.cloud.sql.connector import Connector, IPTypes
-# import sqlalchemy
 
 def obtener_conexion()-> pymysql.connections.Connection:
     instance_connection_name = os.getenv("INSTANCE_CONNECTION_NAME")
@@ -16,11 +15,6 @@ def obtener_conexion()-> pymysql.connections.Connection:
     db_name = os.getenv('DATABASE_NAME')
     db_port = os.getenv("DATABASE_PORT")
     ip_type = IPTypes.PRIVATE if os.environ.get("PRIVATE_IP") else IPTypes.PUBLIC
-    # db_host = os.environ["DATABASE_HOST"]
-    # db_user = os.environ["DATABASE_USER"]
-    # db_pass = os.environ["DATABASE_PASS"]
-    # db_name = os.environ["DATABASE_NAME"]
-    # db_port = os.environ["DATABASE_PORT"]
     connector = Connector(ip_type)
 
     def getconn() -> pymysql.connections.Connection:
@@ -34,16 +28,6 @@ def obtener_conexion()-> pymysql.connections.Connection:
         return conn
 
     return getconn()
-    # return pymysql.connect(host=db_host,
-    #                             user=db_user,
-    #                             password=db_pass,
-    #                             port= int(db_port) ,
-    #                             db=db_name)
-    # return pymysql.connect(host='127.0.0.1',
-    #                             user='root',
-    #                             password='qwerty123',
-    #                             port= 3306 ,
-    #                             db='db-algoritmos')
 
 def insert_record(tipo, tiempo, largoLista):
     conexion = obtener_conexion()
@@ -105,7 +89,7 @@ def bubble_sort():
         insert_record('bubble sort', tiempo_ejecucion, len(lista))
         print(f'lista ordenada {sortedList}')
         print(f'tiempo {tiempo_ejecucion}')
-        return jsonify({"mensaje": "Datos recibidos correctamente."}), 200
+        return jsonify({"mensaje": "Datos recibidos correctamente.", "lista": sortedList}), 200
     else:
         return jsonify({"mensaje": "Datos recibidos incorrectos."}), 400
     
@@ -122,7 +106,7 @@ def selection_sort():
         insert_record('selection sort', tiempo_ejecucion, len(lista))
         print(f'lista ordenada {sortedList}')
         print(f'tiempo {tiempo_ejecucion}')
-        return jsonify({"mensaje": "Datos recibidos correctamente."}), 200
+        return jsonify({"mensaje": "Datos recibidos correctamente.", "lista": sortedList}), 200
     else:
         return jsonify({"mensaje": "Datos recibidos incorrectos."}), 400
     
@@ -139,7 +123,7 @@ def insertion_sort():
         insert_record('insertion sort', tiempo_ejecucion, len(lista))
         print(f'lista ordenada {sortedList}')
         print(f'tiempo {tiempo_ejecucion}')
-        return jsonify({"mensaje": "Datos recibidos correctamente."}), 200
+        return jsonify({"mensaje": "Datos recibidos correctamente.", "lista": sortedList}), 200
     else:
         return jsonify({"mensaje": "Datos recibidos incorrectos."}), 400
 
@@ -147,27 +131,3 @@ def insertion_sort():
 if __name__ == '__main__':
     app.run(debug=True)
 
-
-
-# curl -X POST -H "Content-Type: application/json" -d '{
-#   "lista": [3, 4, 1, 22]
-# }' http://127.0.0.1:5000/bubble-sort
-
-# gcloud pubsub topics create new-list
-# gcloud pubsub subscriptions create new-list-sub --topic new-list
-
-# docker build --tag python-docker .
-# docker run python-docker:latest
-
-# python -m venv venv
-# source venv/bin/activate
-
-        # publisher = pubsub_v1.PublisherClient()
-        # project_id = "top-creek-395501"
-        # topic_id = "new-list"
-        # topic_path = publisher.topic_path(project_id, topic_id)
-        # data_published = json.dumps(data ).encode("utf-8")
-        # print(topic_path)
-        # future = publisher.publish(topic_path, data_published)
-        # print(f"Published messages to {topic_path}.")
-        # print('future', future.result())

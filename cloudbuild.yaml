@@ -1,88 +1,15 @@
 steps:
-  # # Install dependencies
-  # - name: python
-  #   entrypoint: pip
-  #   args: ["install", "-r", "requirements.txt", "--user"]
-  #   id: 'install-dependencies'
-  #   waitFor: ['-']
-# # Docker Build - proxy
-#   - name: 'gcr.io/cloud-builders/docker'
-#     args: ['build', '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/sample-sql-proxy:latest',
-#         '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/sample-sql-proxy:$COMMIT_SHA',
-#         '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/sample-sql-proxy:$BUILD_ID', '.']
-#     id: 'build-proxy-image'
-# # Docker push to Google Artifact Registry
-#   - name: 'gcr.io/cloud-builders/docker'
-#     args: ['push', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/sample-sql-proxy:$COMMIT_SHA']
-#     id: 'push-proxy-image-to-artifact-registry'
-#     waitFor: ['build-proxy-image']
-#proxy bin (checar si sirve la substitution)
-
-
-
-
-  # - id: "docker-layer"
-  #   name: "gcr.io/cloud-builders/docker"
-  #   entrypoint: /bin/bash
-  #   args:
-  #     - '-c'
-  #     - |
-  #       echo "FROM $_IMAGE_NAME
-  #       COPY --from=gcr.io/cloud-sql-connectors/cloud-sql-proxy /cloud-sql-proxy /cloudsql/cloud-sql-proxy" > Dockerfile-proxy;
-
-  #       docker build -f Dockerfile-proxy -t ${_IMAGE_NAME}-proxy .
-    # waitFor: ['push-image-to-artifact-registry']
 # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
-    # env:
-    #   - "DATABASE_NAME=${_DATABASE_NAME}"
-    #   - "DATABASE_USER=${_DATABASE_USER}"
-    #   - "DATABASE_HOST=127.0.0.1"
-    #   - "DATABASE_PORT=${_DATABASE_PORT}"
-    #   - "DATABASE_TYPE=${_DATABASE_TYPE}"
-    # secretEnv:
-    #   - DATABASE_PASS
-    args: ['build', '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:latest',
-        '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA',
-        '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$BUILD_ID','.']
+    args: ['build', '-t', '${_IMAGE_NAME_LATEST}',
+        '-t', '${_IMAGE_NAME_SHA}',
+        '-t', '${_IMAGE_NAME_BUILID}','.']
     id: 'build-image'
-    # waitFor: ['docker-layer']
 # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA']
+    args: ['push', '${_IMAGE_NAME_SHA}']
     id: 'push-image-to-artifact-registry'
     waitFor: ['build-image']
-# #proxy bin (checar si sirve la substitution)
-#   - id: "docker-layer"
-#     name: "gcr.io/cloud-builders/docker"
-#     entrypoint: /bin/bash
-#     args:
-#       - '-c'
-#       - |
-#         echo "FROM $_IMAGE_NAME
-#         COPY --from=gcr.io/cloud-sql-connectors/cloud-sql-proxy /cloud-sql-proxy /cloudsql/cloud-sql-proxy" > Dockerfile-proxy;
-
-#         docker build -f Dockerfile-proxy -t ${_IMAGE_NAME}-proxy .
-#     waitFor: ['push-image-to-artifact-registry']
-# For TCP connections
-  # - id: "migrate-tcp"
-  #   name: "${_IMAGE_NAME}-proxy"
-  #   # dir: sql-proxy
-  #   env:
-  #     - "DATABASE_NAME=${_DATABASE_NAME}"
-  #     - "DATABASE_USER=${_DATABASE_USER}"
-  #     - "DATABASE_HOST=127.0.0.1"
-  #     - "DATABASE_PORT=${_DATABASE_PORT}"
-  #     - "DATABASE_TYPE=${_DATABASE_TYPE}"
-  #   secretEnv:
-  #     - DATABASE_PASS
-  #   entrypoint: /bin/bash
-  #   args:
-  #     - '-c'
-  #     - |
-  #       /cloudsql/cloud-sql-proxy --port ${_DATABASE_PORT} ${_INSTANCE_CONNECTION_NAME} & sleep 2;
-  #       python migrate.py
-  #   waitFor: ['push-image-to-artifact-registry']
 #cloud run
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
@@ -90,7 +17,7 @@ steps:
       - 'deploy'
       - 'cloudbuild-practice-service'
       - '--image'
-      - 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA'
+      - '${_IMAGE_NAME_SHA}'
       - '--region'
       - 'us-central1'
       - '--port=8080'
@@ -102,7 +29,7 @@ steps:
       - '--set-env-vars'
       - 'INSTANCE_CONNECTION_NAME=${_INSTANCE_CONNECTION_NAME},DATABASE_TYPE=${_DATABASE_TYPE},DATABASE_PORT=${_DATABASE_PORT},DATABASE_HOST=127.0.0.1,DATABASE_NAME=${_DATABASE_NAME},DATABASE_USER=${_DATABASE_USER}'
       - '--set-secrets'
-      - 'DATABASE_PASS=dbPass:latest'
+      - 'DATABASE_PASS=${_DATABASE_PASSWORD_KEY}:latest'
     waitFor: ['push-image-to-artifact-registry']
     id: 'deploy-to-cloud-run'
 
@@ -123,20 +50,6 @@ substitutions:
   _DATABASE_PORT: '3306'
   _DATABASE_TYPE: mysql
   _DATABASE_PASSWORD_KEY: dbPass
-  # _IMAGE_NAME_PROXY: us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/sample-sql-proxy:latest
-  _IMAGE_NAME: us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:latest
-
-# availableSecrets:
-#   secretManager:
-#     - versionName: projects/$PROJECT_ID/secrets/${_DATABASE_PASSWORD_KEY}/versions/latest
-#       env: DATABASE_PASS
-  
-
-# # Deploy to Cloud Run
-#   - name: google/cloud-sdk
-#     args: ['gcloud', 'run', 'deploy', 'helloworld-${SHORT_SHA}',
-#           '--image=us-central1-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/myimage:${SHORT_SHA}',
-#           '--region', 'us-central1', '--platform', 'managed',
-#           '--allow-unauthenticated']
-
-# https://cloud.google.com/build/docs/building/build-containerize-python?hl=es-419
+  _IMAGE_NAME_LATEST: us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:latest
+  _IMAGE_NAME_SHA: us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA
+  _IMAGE_NAME_BUILID: us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$BUILD_ID
