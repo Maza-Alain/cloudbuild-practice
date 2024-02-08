@@ -1,13 +1,13 @@
 steps:
 # Docker Build
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', '${_IMAGE_NAME_LATEST}',
-        '-t', '${_IMAGE_NAME_SHA}',
-        '-t', '${_IMAGE_NAME_BUILID}','.']
+    args: ['build', '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:latest',
+        '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA',
+        '-t', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$BUILD_ID','.']
     id: 'build-image'
 # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', '${_IMAGE_NAME_SHA}']
+    args: ['push', 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA']
     id: 'push-image-to-artifact-registry'
     waitFor: ['build-image']
 #cloud run
@@ -17,7 +17,7 @@ steps:
       - 'deploy'
       - 'cloudbuild-practice-service'
       - '--image'
-      - '${_IMAGE_NAME_SHA}'
+      - 'us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA'
       - '--region'
       - 'us-central1'
       - '--port=8080'
@@ -50,6 +50,3 @@ substitutions:
   _DATABASE_PORT: '3306'
   _DATABASE_TYPE: mysql
   _DATABASE_PASSWORD_KEY: dbPass
-  _IMAGE_NAME_LATEST: us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:latest
-  _IMAGE_NAME_SHA: us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$COMMIT_SHA
-  _IMAGE_NAME_BUILID: us-central1-docker.pkg.dev/${_PROJECT_ID}/${_ARTIFACT_REGISTRY_REPO}/cloudbuild-practice-image:$BUILD_ID
