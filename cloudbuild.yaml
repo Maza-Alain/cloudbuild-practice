@@ -102,8 +102,8 @@ steps:
       - '--set-env-vars'
       - 'DATABASE_TYPE=${_DATABASE_TYPE},DATABASE_PORT=${_DATABASE_PORT},DATABASE_HOST=127.0.0.1,DATABASE_NAME=${_DATABASE_NAME},DATABASE_USER=${_DATABASE_USER}'
       - '--set-secrets'
-      - 'DATABASE_PASS=projects/$PROJECT_ID/secrets/${_DATABASE_PASSWORD_KEY}/versions/latest:latest'
-    waitFor: ['build-image']
+      - 'DATABASE_PASS=DATABASE_PASS:latest'
+    waitFor: ['push-image-to-artifact-registry']
     id: 'deploy-to-cloud-run'
 
 images:
