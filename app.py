@@ -5,23 +5,40 @@ import time
 app = Flask(__name__)
 import pymysql
 import os
+from google.cloud.sql.connector import Connector, IPTypes
+# import sqlalchemy
 
-def obtener_conexion():
+def obtener_conexion()-> pymysql.connections.Connection:
+    instance_connection_name = os.getenv("INSTANCE_CONNECTION_NAME")
     db_host = os.getenv("DATABASE_HOST")
     db_user = os.getenv('DATABASE_USER')
     db_pass = os.getenv("DATABASE_PASS")
     db_name = os.getenv('DATABASE_NAME')
     db_port = os.getenv("DATABASE_PORT")
+    ip_type = IPTypes.PRIVATE if os.environ.get("PRIVATE_IP") else IPTypes.PUBLIC
     # db_host = os.environ["DATABASE_HOST"]
     # db_user = os.environ["DATABASE_USER"]
     # db_pass = os.environ["DATABASE_PASS"]
     # db_name = os.environ["DATABASE_NAME"]
     # db_port = os.environ["DATABASE_PORT"]
-    return pymysql.connect(host=db_host,
-                                user=db_user,
-                                password=db_pass,
-                                port= int(db_port) ,
-                                db=db_name)
+    connector = Connector(ip_type)
+
+    def getconn() -> pymysql.connections.Connection:
+        conn: pymysql.connections.Connection = connector.connect(
+            instance_connection_name,
+            "pymysql",
+            user=db_user,
+            password=db_pass,
+            db=db_name,
+        )
+        return conn
+
+    return getconn()
+    # return pymysql.connect(host=db_host,
+    #                             user=db_user,
+    #                             password=db_pass,
+    #                             port= int(db_port) ,
+    #                             db=db_name)
     # return pymysql.connect(host='127.0.0.1',
     #                             user='root',
     #                             password='qwerty123',
